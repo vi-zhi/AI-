@@ -1,0 +1,1 @@
+docker stop Ai-voice-draw-tool

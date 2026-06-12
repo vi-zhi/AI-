@@ -1,0 +1,5 @@
+spring:
+  config:
+    name: Ai-voice-draw-tool-app
+  profiles:
+    active: dev
