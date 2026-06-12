@@ -41,3 +41,4 @@ build/
 /Ai-voice-draw-tool-app/src/main/resources/application-prod.yml
 /Ai-voice-draw-tool-app/src/main/resources/application-test.yml
 /docs/dev-ops/mysql/sql/xfg-frame-archetype.sql
+/Ai-voice-draw-tool-app/src/main/resources/agent/draw-agent.yml
