@@ -2,8 +2,7 @@ package com.vizhi.trigger.http;
 
 import com.baidu.aip.speech.AipSpeech;
 import com.vizhi.api.response.Response;
-
-import com.vizhi.domain.agent.service.IArmoryService;
+import com.vizhi.domain.agent.service.IChatService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -25,7 +20,8 @@ import java.util.Map;
 public class VoiceDrawController {
 
     @Autowired
-    private IArmoryService armoryService;
+    private IChatService chatService;
+
     @Value("${baidu.app-id}")
     private String APP_ID;
 
@@ -42,11 +38,12 @@ public class VoiceDrawController {
     @PostMapping("voice")
     public Response<Map<String, Object>> voiceDraw(
             @RequestParam("file") MultipartFile voiceFile,
-            @RequestParam(value = "agentId", defaultValue = "100001") String agentId) {
+            @RequestParam(value = "agentId", defaultValue = "100001") String agentId,
+            @RequestParam(value = "userId", defaultValue = "default") String userId) {
 
         Map<String, Object> result = new HashMap<>();
 
-        // 1. 语音识别(STT) — 这里替换成实际的STT服务
+        // 1. 语音识别(STT)
         String text = sttRecognize(voiceFile);
         if (!StringUtils.hasText(text)) {
             return Response.<Map<String, Object>>builder()
@@ -57,15 +54,13 @@ public class VoiceDrawController {
         }
         log.info("语音识别结果: {}", text);
 
-        // 2. 调用Agent（含子Agent纠错 + 生成XML）
-        String xml = armoryService.runAgent(agentId, text);
-        log.info("Agent输出XML长度: {}", xml.length());
+        // 2. 调用ChatService (有session状态,支持多轮对话)
+        List<String> replies = chatService.handleMessage(agentId, userId, text);
+        log.info("Agent回复条数: {}", replies.size());
 
-        // 3. 清理可能的 Markdown 代码块标记
-        xml = cleanXml(xml);
-
-        result.put("xml", xml);
+        result.put("replies", replies);
         result.put("inputText", text);
+        result.put("type", "chat");
 
         return Response.<Map<String, Object>>builder()
                 .code("0000")
@@ -80,7 +75,8 @@ public class VoiceDrawController {
     @PostMapping("text")
     public Response<Map<String, Object>> textDraw(
             @RequestParam("text") String text,
-            @RequestParam(value = "agentId", defaultValue = "100001") String agentId) {
+            @RequestParam(value = "agentId", defaultValue = "100001") String agentId,
+            @RequestParam(value = "userId", defaultValue = "default") String userId) {
 
         Map<String, Object> result = new HashMap<>();
 
@@ -92,11 +88,11 @@ public class VoiceDrawController {
                     .build();
         }
 
-        String xml = armoryService.runAgent(agentId, text);
-        xml = cleanXml(xml);
+        List<String> replies = chatService.handleMessage(agentId, userId, text);
 
-        result.put("xml", xml);
+        result.put("replies", replies);
         result.put("inputText", text);
+        result.put("type", "chat");
 
         return Response.<Map<String, Object>>builder()
                 .code("0000")
@@ -106,8 +102,7 @@ public class VoiceDrawController {
     }
 
     /**
-     * STT语音识别 — 替换成你的STT服务
-     * 示例：阿里云、讯飞、Whisper等
+     * STT语音识别
      */
     private String sttRecognize(MultipartFile file) {
         try {
@@ -136,7 +131,7 @@ public class VoiceDrawController {
     }
 
     /**
-     * 清理可能存在的 Markdown 代码块标记
+     * 清理可能存在的 Markdown 代码块标记 (保留,供后续需要时使用)
      */
     private String cleanXml(String xml) {
         if (xml == null) return null;
