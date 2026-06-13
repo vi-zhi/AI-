@@ -26,7 +26,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.baidu.aip</groupId>
+            <artifactId>java-sdk</artifactId>
+            <version>4.16.11</version>
+        </dependency>
         <!-- 系统模块 -->
         <dependency>
             <groupId>com.vizhi</groupId>

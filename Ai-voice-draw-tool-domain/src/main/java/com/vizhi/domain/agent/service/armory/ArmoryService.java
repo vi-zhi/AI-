@@ -32,4 +32,9 @@ public class ArmoryService implements IArmoryService {
                     new DefaultArmoryFactory.DynamicContext());
         }
     }
+
+    @Override
+    public String runAgent(String agentId, String text) {
+        return "";
+    }
 }

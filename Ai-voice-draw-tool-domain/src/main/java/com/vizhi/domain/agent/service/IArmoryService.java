@@ -12,4 +12,6 @@ import java.util.ArrayList;
  */
 public interface IArmoryService {
     void acceptArmoryAgents(ArrayList<AiAgentConfigTableVO> aiAgentConfigTableVOS) throws Exception;
+
+    String runAgent(String agentId, String text);
 }
