@@ -8,8 +8,10 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
-import javax.annotation.Resource;
+
+import jakarta.annotation.Resource;
 import java.util.ArrayList;
 
 @Slf4j
