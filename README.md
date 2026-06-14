@@ -104,7 +104,7 @@ Content-Type: application/json
 
 ## 开发者
 
-- **xiaofuge** - 184172133@qq.com
+- **vizhi** - 2720561950@qq.com
 
 ## 许可证
 
