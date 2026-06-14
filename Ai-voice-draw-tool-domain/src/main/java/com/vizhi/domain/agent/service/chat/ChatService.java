@@ -108,6 +108,8 @@ public class ChatService implements IChatService {
         List<String> outputs = new ArrayList<>();
         events.blockingForEach(event -> outputs.add(event.stringifyContent()));
 
+        log.info("Agent回复条数: {}", outputs.size());
+
         return outputs;
     }
 
