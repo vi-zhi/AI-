@@ -9,6 +9,9 @@
 - 🤖 **AI 画图**：基于 Spring AI 智能生成流程图
 - 🎨 **可视化展示**：实时展示 AI 生成的图表
 
+## 项目demo视频
+https://github.com/user-attachments/assets/ec1f23d8-ea86-4713-b32b-13de07337ef0
+
 ## 技术栈
 
 ### 后端
