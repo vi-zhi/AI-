@@ -178,9 +178,9 @@ public class VoiceDrawController implements WebMvcConfigurer {
      */
     private String sttRecognize(org.springframework.web.multipart.MultipartFile file) {
         try {
-            String APP_ID = System.getProperty(baiduAppId);
-            String API_KEY = System.getProperty(baiduApiKey);
-            String SECRET_KEY = System.getProperty(baiduSecretKey);
+            String APP_ID = baiduAppId;
+            String API_KEY = baiduApiKey;
+            String SECRET_KEY = baiduSecretKey;
 
             com.baidu.aip.speech.AipSpeech client = new com.baidu.aip.speech.AipSpeech(APP_ID, API_KEY, SECRET_KEY);
 
@@ -191,11 +191,20 @@ public class VoiceDrawController implements WebMvcConfigurer {
             java.util.HashMap<String, Object> options = new java.util.HashMap<>();
             options.put("dev_pid", 1537);
 
-            org.json.JSONObject result = client.asr(audioData, "pcm", 16000, options);
+            org.json.JSONObject result = client.asr(audioData, "wav", 16000, options);
 
             log.info("result: {}", result);
 
-            return result.getJSONArray("result").getString(0);
+            if (result.has("error_code")) {
+                log.error("百度语音识别错误: error_code={}, error_msg={}", result.get("error_code"), result.get("error_msg"));
+                return null;
+            }
+
+            if (result.has("result")) {
+                return result.getJSONArray("result").getString(0);
+            }
+
+            return null;
 
         } catch (Exception e) {
             log.error("STT识别失败", e);
